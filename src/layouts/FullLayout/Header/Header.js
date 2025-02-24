@@ -1,11 +1,11 @@
 import React from "react";
 //import { Link } from 'react-router-dom';
-import { Bell } from "react-bootstrap-icons";
+// import { Bell } from "react-bootstrap-icons";
 
 import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
-import AddToPhotosOutlinedIcon from '@mui/icons-material/AddToPhotosOutlined';
-import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
+// import AddToPhotosOutlinedIcon from '@mui/icons-material/AddToPhotosOutlined';
+// import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 
@@ -20,6 +20,7 @@ import {
   Button,
   Avatar,
   Divider,
+  Badge,
   ListItemIcon,
 } from "@mui/material";
 
@@ -29,10 +30,9 @@ const Header = (props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
    // Sample notification data
-   const notifications = [
-    { id: 1, title: "New comment on your post", time: "2m ago" },
-    { id: 2, title: "Someone liked your photo", time: "10m ago" },
-    { id: 3, title: "New follower request", time: "1h ago" },
+   const notificationsData = [
+    { id: 1, title: "🚀 Word Adventure Awaits", description: "Discover Hidden Puzzles Quickly!", time: "4m" },
+    { id: 2, title: "📅 Instagram", description: "", time: "1h" },
   ];
 
   const handleClick = (event) => {
@@ -57,9 +57,9 @@ const Header = (props) => {
   // 5
   const [anchorEl5, setAnchorEl5] = React.useState(null);
 
-  const handleClick5 = (event) => {
-    setAnchorEl5(event.currentTarget);
-  };
+  // const handleClick5 = (event) => {
+  //   setAnchorEl5(event.currentTarget);
+  // };
 
   const handleClose5 = () => {
     setAnchorEl5(null);
@@ -158,52 +158,37 @@ const Header = (props) => {
         {/* ------------------------------------------- */}
         {/* Notifications Dropdown */}
         {/* ------------------------------------------- */}
-        <IconButton
-          aria-label="menu"
-          color="inherit"
-          aria-controls="notification-menu"
-          aria-haspopup="true"
-          onClick={handleClick}
-        >
+        <IconButton color="inherit" onClick={handleClick}>
+        <Badge badgeContent={notificationsData.length} color="error">
           <NotificationsNoneOutlinedIcon width="20" height="20" />
-        </IconButton>
-        <Menu
+        </Badge>
+      </IconButton>
+      
+      <Menu
         id="notification-menu"
         anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
+        open={Boolean(anchorEl)} // ✅ Fix applied
         onClose={handleClose}
         PaperProps={{
           sx: {
-            width: 300, 
+            width: 320,
+            maxHeight: 400,
             borderRadius: 3,
             boxShadow: 3,
           },
         }}
       >
-        {/* Header */}
-        <MenuItem>
-          <Avatar sx={{ marginRight: 2 }} />
-          <Typography variant="body1">Notifications</Typography>
-        </MenuItem>
         <Divider />
-
-        {/* Notification Items */}
-        {notifications.map((notif) => (
-          <MenuItem key={notif.id} onClick={handleClose}>
-            <Typography variant="body2">{notif.title}</Typography>
-            <Typography variant="caption" color="gray" sx={{ marginLeft: "auto" }}>
-              {notif.time}
-            </Typography>
+        {notificationsData.map((notif) => (
+          <MenuItem key={notif.id} onClick={handleClose} sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
+            <Typography variant="body1" fontWeight="bold">{notif.title}</Typography>
+            <Typography variant="body2" color="textSecondary">{notif.description}</Typography>
+            <Typography variant="caption" color="gray" sx={{ marginLeft: "auto" }}>{notif.time}</Typography>
           </MenuItem>
         ))}
-
         <Divider />
-
-        {/* View All Button */}
         <MenuItem onClick={handleClose} sx={{ justifyContent: "center" }}>
-          <Typography variant="body2" color="primary">
-            View all notifications
-          </Typography>
+          <Typography variant="body2" color="primary">View all notifications</Typography>
         </MenuItem>
       </Menu>
         {/* ------------------------------------------- */}
@@ -259,53 +244,28 @@ const Header = (props) => {
             },
           }}
         >
-          <MenuItem onClick={handleClose4}>
-            <Avatar
-              sx={{
-                width: "35px",
-                height: "35px",
-              }}
-            />
-            <Box
-              sx={{
-                ml: 2,
-              }}
-            >
-              My account
-            </Box>
-          </MenuItem>
+          <MenuItem onClick={handleClose4}>Browse events</MenuItem>
+          <MenuItem onClick={handleClose4}>Manage my events</MenuItem>
           <Divider />
-          <MenuItem onClick={handleClose4}>
-            <ListItemIcon>
-              <PersonAddOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            Add another account
-          </MenuItem>
-          <MenuItem onClick={handleClose4}>
-            <ListItemIcon>
-              <PersonAddOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            Add another account
-          </MenuItem>
-          <MenuItem onClick={handleClose4}>
-            <ListItemIcon>
-              <PersonAddOutlinedIcon fontSize="small" />
-            </ListItemIcon>
-            Add another account
-          </MenuItem>
+          <MenuItem onClick={handleClose4}>Tickets (0)</MenuItem>
+          <MenuItem onClick={handleClose4}>Liked</MenuItem>
+          <MenuItem onClick={handleClose4}>Following</MenuItem>
+          <MenuItem onClick={handleClose4}>Interests</MenuItem>
+          <Divider />
           <MenuItem onClick={handleClose4}>
             <ListItemIcon>
               <SettingsOutlinedIcon fontSize="small" />
             </ListItemIcon>
-            Settings
+            Account settings
           </MenuItem>
           <MenuItem onClick={handleClose4}>
             <ListItemIcon>
               <LogoutOutlinedIcon fontSize="small" />
             </ListItemIcon>
-            Logout
+            Log out
           </MenuItem>
         </Menu>
+
       </Toolbar>
     </AppBar>
   );

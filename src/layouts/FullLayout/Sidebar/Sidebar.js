@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router";
 import { Link, NavLink } from "react-router-dom";
 import {
@@ -9,75 +9,88 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Collapse,
 } from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { SidebarWidth } from "../../../assets/global/Theme-variable";
 import LogoIcon from "../Logo/LogoIcon";
-import Menuitems from "./data";
+import Menuitems from "./data"; // Ensure it contains children if needed
 
 const Sidebar = (props) => {
-  const [open, setOpen] = React.useState(true);
   const { pathname } = useLocation();
-  const pathDirect = pathname;
   const lgUp = useMediaQuery((theme) => theme.breakpoints.up("lg"));
+  const [openSubmenus, setOpenSubmenus] = useState({});
 
-  const handleClick = (index) => {
-    if (open === index) {
-      setOpen((prevopen) => !prevopen);
-    } else {
-      setOpen(index);
-    }
+  const handleToggle = (index) => {
+    setOpenSubmenus((prevState) => ({
+      ...prevState,
+      [index]: !prevState[index],
+    }));
   };
 
   const SidebarContent = (
     <Box sx={{ p: 3, height: "calc(100vh - 40px)" }}>
       <Link to="/">
-        <Box sx={{ display: "flex", alignItems: "Center" }}>
+        <Box sx={{ display: "flex", alignItems: "center" }}>
           <LogoIcon />
         </Box>
       </Link>
 
-      <Box>
-        <List
-          sx={{
-            mt: 4,
-          }}
-        >
-          {Menuitems.map((item, index) => {
+      <List sx={{ mt: 4 }}>
+        {Menuitems.map((item, index) => (
+          <React.Fragment key={item.title}>
+            <ListItem
+              button
+              component={item.children ? "div" : NavLink}
+              to={!item.children ? item.href : undefined}
+              selected={pathname === item.href}
+              onClick={() => item.children && handleToggle(index)}
+              sx={{
+                mb: 1,
+                ...(pathname === item.href && {
+                  color: "white",
+                  backgroundColor: (theme) => `${theme.palette.primary.main}!important`,
+                }),
+              }}
+            >
+              <ListItemIcon sx={{ ...(pathname === item.href && { color: "white" }) }}>
+                {React.createElement(item.icon, { width: 20, height: 20 })}
+              </ListItemIcon>
+              <ListItemText primary={item.title} />
+              {item.children && (openSubmenus[index] ? <ExpandLess /> : <ExpandMore />)}
+            </ListItem>
 
-            return (
-              <List component="li" disablePadding key={item.title}>
-                <ListItem
-                  onClick={() => handleClick(index)}
-                  button
-                  component={NavLink}
-                  to={item.href}
-                  selected={pathDirect === item.href}
-                  sx={{
-                    mb: 1,
-                    ...(pathDirect === item.href && {
-                      color: "white",
-                      backgroundColor: (theme) =>
-                        `${theme.palette.primary.main}!important`,
-                    }),
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      ...(pathDirect === item.href && { color: "white" }),
-                    }}
-                  >
-                    <item.icon width="20" height="20" />
-                  </ListItemIcon>
-                  <ListItemText>{item.title}</ListItemText>
-                </ListItem>
-              </List>
-            );
-          })}
-        </List>
-      </Box>
-
+            {/* Display Children (Nested Menu) */}
+            {item.children && (
+              <Collapse in={openSubmenus[index]} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding sx={{ pl: 4 }}>
+                  {item.children.map((child) => (
+                    <ListItem
+                      key={child.title}
+                      button
+                      component={NavLink}
+                      to={child.href}
+                      selected={pathname === child.href}
+                      sx={{
+                        mb: 1,
+                        ...(pathname === child.href && {
+                          color: "white",
+                          backgroundColor: (theme) => `${theme.palette.primary.light}!important`,
+                        }),
+                      }}
+                    >
+                      <ListItemText primary={child.title} />
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
+            )}
+          </React.Fragment>
+        ))}
+      </List>
     </Box>
   );
+
   if (lgUp) {
     return (
       <Drawer
@@ -85,26 +98,23 @@ const Sidebar = (props) => {
         open={props.isSidebarOpen}
         variant="persistent"
         PaperProps={{
-          sx: {
-            width: SidebarWidth,
-          },
+          sx: { width: SidebarWidth },
         }}
       >
         {SidebarContent}
       </Drawer>
     );
   }
+
   return (
     <Drawer
       anchor="left"
       open={props.isMobileSidebarOpen}
       onClose={props.onSidebarClose}
-      PaperProps={{
-        sx: {
-          width: SidebarWidth,
-        },
-      }}
       variant="temporary"
+      PaperProps={{
+        sx: { width: SidebarWidth },
+      }}
     >
       {SidebarContent}
     </Drawer>
